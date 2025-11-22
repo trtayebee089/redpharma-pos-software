@@ -1,79 +1,167 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
-
 <p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
+  <img src="https://www.redpharmabd.com/assets/logo-DQC7WR4c.png" alt="RedPharma Logo" width="200"/>
 </p>
+# RedPharma POS – API & System Modifications
 
-## About Laravel
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repo-blue?logo=github)](https://github.com/trtayebee089/redpharma-pos-software)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+RedPharma POS is a comprehensive pharmacy management system for Bangladesh, integrating **point-of-sale (POS) functionality**, **online orders**, **customer reward points**, **shipping zones**, and **API endpoints** for mobile/web integration. This document outlines the modifications made to the POS system, including database changes, frontend updates, and API enhancements.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Table of Contents
 
-## Learning Laravel
+- [Features](#features)  
+- [Database Modifications](#database-modifications)  
+- [Frontend Modifications](#frontend-modifications)  
+- [Controllers](#controllers)  
+- [API Endpoints](#api-endpoints)  
+- [Deployment Instructions](#deployment-instructions)  
+- [Project Repository](#project-repository)  
+- [License](#license)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Features
 
-## Laravel Sponsors
+- **SEO-friendly categories & products** using slugs  
+- **Sale type tracking**: POS, website, manual entry  
+- **Customer enhancements**: password, avatar, gender, card number  
+- **Riders & order tracking** for deliveries  
+- **Reward point system** with tiers and usage logs  
+- **Shipping zones** for cost management  
+- **API endpoints** for integration with web/mobile apps  
+- **Enhanced backend UI** for orders, reward points, and shipping zones
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+---
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
+## Database Modifications
 
-## Contributing
+### Categories Table
+```php
+$table->string('slug')->after('name')->nullable();
+$table->string('bg_color')->nullable()->after('is_active');
+```
+- **slug**: SEO-friendly URL for category  
+- **bg_color**: Background color for category display  
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Products Table
+```php
+$table->string('slug')->after('name')->nullable();
+```
+- **slug**: SEO-friendly URL for product  
 
-## Code of Conduct
+### Sales Table
+```php
+$table->enum('sale_type', ["pos", "website", "manual"])->default("pos")->after("reference_no");
+```
+- **sale_type**: Identify the origin of sale  
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Customers Table
+```php
+$table->string('password')->nullable()->after('phone_number');
+$table->string('avator')->nullable()->after('name');
+$table->enum('gender', ['male','female','others'])->default('male')->after('name');
+$table->string('card_number')->nullable()->after('password');
+```
+- **password**: Customer authentication  
+- **avatar**: Customer profile picture  
+- **gender**: Customer gender  
+- **card_number**: Loyalty/membership card  
 
-## Security Vulnerabilities
+### New Tables
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Riders**: Manage delivery personnel  
+- **Order Trackings**: Track order statuses  
+- **Reward Point Tiers**: Define points tiers  
+- **Reward Point Usages**: Log points usage  
+- **Shipping Zones**: Define shipping areas & costs  
+- **Account Removal Requests**: Receive account delete requests  
+
+> All new tables have corresponding Eloquent models in `app/Models`.
+
+---
+
+## Frontend Modifications
+
+- **Sidebar Menu**: Added "Orders List" (`resources/views/backend/layouts/sidebar.blade.php`)  
+- **Reward Points Settings**: Updated to accommodate tiers (`resources/views/backend/reward_point_setting.blade.php`)  
+- **Shipping Zones**: Manage shipping costs by zone (`resources/views/backend/shipping_zones.blade.php`)  
+- **Customers List**: People management (`resources/views/backend/customers.blade.php`)  
+
+---
+
+## Controllers
+
+### Web Controllers
+- **OnlineOrderController.php**  
+- **RiderController.php**  
+Purpose: Manage online orders and rider assignments.
+
+### API Controllers
+- Located in `app/Http/Controllers/API`  
+- New controllers for **Riders, Orders, Reward Points, Shipping Zones**  
+
+---
+
+## API Endpoints
+
+- Update categories slug:  
+`https://redpharma.techrajshahi.com/api/categories/boot-slug/update`  
+- Update products slug:  
+`https://redpharma.techrajshahi.com/api/products/boot-slug/update`  
+
+> Use Postman or similar tools to test all API endpoints.
+
+---
+
+## Deployment Instructions
+
+1. Clone the repository:
+```bash
+git clone https://github.com/trtayebee089/redpharma-pos-software.git
+cd redpharma-pos-software
+```
+2. Install dependencies:
+```bash
+composer install
+npm install
+npm run dev
+```
+3. Copy environment file:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+4. Run database migrations:
+```bash
+php artisan migrate
+```
+5. Verify new tables and columns.  
+6. Check backend accessibility of **Orders List, Reward Points, and Shipping Zones**.  
+7. Update models, routes (`routes/web.php`), and language files as needed.  
+8. Update sale type in `SaleController`:
+```php
+$sale->sale_type = 'pos';
+```
+
+---
+
+## Project Repository
+
+[RedPharma POS GitHub Repository](https://github.com/trtayebee089/redpharma-pos-software)
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# salepro
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Notes
+
+- Always verify **reward point data** and **shipping zones** for consistency after deployment  
+- Use the latest Laravel version recommended for POS module compatibility  
+- Vendor directory should **not be committed**; use `.gitignore` to avoid LFS issues  
+- For any API testing, ensure your `.env` is correctly configured with DB and API keys
